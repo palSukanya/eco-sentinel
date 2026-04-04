@@ -10,7 +10,7 @@ _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _DIST_DIR = os.path.join(_BASE_DIR, "frontend", "dist")
 _HAS_DIST = os.path.isdir(_DIST_DIR) and os.path.isfile(os.path.join(_DIST_DIR, "index.html"))
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 
 # ── Manual CORS ───────────────────────────────────────────────────────────────
 @app.after_request
@@ -73,52 +73,17 @@ def _ensure_data():
         print(f"[EcoSenitel] Generated {te_path}")
 
 # ── Serve React (production build) OR dev instructions ────────────────────────
-if _HAS_DIST:
-    @app.route("/", defaults={"path": ""})
-    @app.route("/<path:path>")
-    def serve_react(path):
-        full = os.path.join(_DIST_DIR, path)
-        if path and os.path.exists(full):
-            return send_from_directory(_DIST_DIR, path)
-        return send_from_directory(_DIST_DIR, "index.html")
-else:
-    @app.route("/")
-    def index():
-        return """<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta http-equiv="refresh" content="3;url=http://localhost:8080"/>
-<title>EcoSenitel — Redirecting…</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#080f1a;color:#fff;font-family:'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px}
-  .logo{font-size:32px;font-weight:800;letter-spacing:0.15em;background:linear-gradient(90deg,#14b8a6,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:32px 40px;text-align:center;max-width:460px}
-  h2{font-size:18px;color:rgba(255,255,255,0.85);margin-bottom:10px}
-  p{color:rgba(255,255,255,0.45);font-size:14px;line-height:1.6}
-  .badge{display:inline-block;background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.4);color:#5eead4;border-radius:999px;padding:4px 14px;font-size:12px;font-weight:700;margin-top:14px}
-  .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:6px;animation:pulse 1.5s ease-in-out infinite}
-  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px 2px #22c55e}50%{opacity:0.4;box-shadow:none}}
-  a{color:#14b8a6;text-decoration:none;font-weight:600}
-  code{background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:6px;font-size:13px;color:#a78bfa}
-</style>
-</head>
-<body>
-  <div class="logo">ECOSenitel</div>
-  <div class="card">
-    <h2><span class="dot"></span>API is running</h2>
-    <p>The React frontend runs on a separate dev server.<br>
-    Redirecting to <a href="http://localhost:8080">http://localhost:8080</a> in 3 seconds…</p>
-    <br>
-    <p>If it doesn't open, run this in a second terminal:</p>
-    <br>
-    <code>cd frontend &amp;&amp; npm run dev</code>
-    <br><br>
-    <div class="badge">Backend API: OK &nbsp;✓</div>
-  </div>
-</body>
-</html>""", 200
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_react(path):
+    full_path = os.path.join(app.static_folder, path)
+
+    if path != "" and os.path.exists(full_path):
+        return send_from_directory(app.static_folder, path)
+
+    return send_from_directory(app.static_folder, "index.html")
+    
 
 # ── API: analysis ─────────────────────────────────────────────────────────────
 @app.route("/api/aquatic", methods=["GET"])
