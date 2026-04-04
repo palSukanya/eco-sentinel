@@ -11,7 +11,7 @@ _DIST_DIR = os.path.join(_BASE_DIR, "frontend", "dist")
 _HAS_DIST = os.path.isdir(_DIST_DIR) and os.path.isfile(os.path.join(_DIST_DIR, "index.html"))
 
 app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
-_ensure_data()
+
 # ── Manual CORS ───────────────────────────────────────────────────────────────
 @app.after_request
 def add_cors(response):
@@ -71,7 +71,10 @@ def _ensure_data():
             "Average of Deforestation Pressure Index": np.linspace(0.2, 0.4, n) + rng.normal(0, 0.02, n),
         }).to_csv(te_path, index=False)
         print(f"[EcoSenitel] Generated {te_path}")
-
+try:
+    _ensure_data()
+except Exception as e:
+    print(f"[EcoSenitel] Data init failed: {e}")
 # ── Serve React (production build) OR dev instructions ────────────────────────
 
 @app.route("/", defaults={"path": ""})
