@@ -53,12 +53,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # ==============================
-# 🔹 Data Files (Optional)
-# ==============================
-data/*.csv
-data/*.json
-
-# ==============================
 # 🔹 Build / Production
 # ==============================
 frontend/dist/

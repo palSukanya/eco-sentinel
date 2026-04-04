@@ -11,7 +11,7 @@ _DIST_DIR = os.path.join(_BASE_DIR, "frontend", "dist")
 _HAS_DIST = os.path.isdir(_DIST_DIR) and os.path.isfile(os.path.join(_DIST_DIR, "index.html"))
 
 app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
-
+_ensure_data()
 # ── Manual CORS ───────────────────────────────────────────────────────────────
 @app.after_request
 def add_cors(response):
