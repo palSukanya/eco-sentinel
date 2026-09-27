@@ -1,6 +1,5 @@
 # 🌍 Eco-Sentinel — Ecosystem Stability Monitor
 
-> 🚀 **Live Demo:** https://eco-sentinel.onrender.com/
 
 📊 AI-powered ecosystem stability & collapse risk monitoring system
 
